@@ -35,9 +35,9 @@ class FK:
 
         # Create Modified DH parameters
         # DH params
-        DH_Table = {alpha0: 0, a0: 0, d1: 0.75, q1: q1,
-                    alpha1: -pi / 2., a1: 0.35, d2: 0, q2: q2 - pi / 2.,
-                    alpha2: 0, a2: 1.25, d3: 0, q3: q3,
+        DH_Table = {alpha0: 0, a0: 0, d1: 0.75, self.q1: self.q1,
+                    alpha1: -pi / 2., a1: 0.35, d2: 0, self.q2: self.q2 - pi / 2.,
+                    alpha2: 0, a2: 1.25, d3: 0, self.q3: self.q3,
                     alpha3: -pi / 2., a3: -0.054, d4: 1.5, q4: q4,
                     alpha4: pi / 2., a4: 0, d5: 0, q5: q5,
                     alpha5: -pi / 2., a5: 0, d6: 0, q6: q6,
@@ -45,15 +45,15 @@ class FK:
                     }
 
         # Create individual transformation matrices
-        self.t0_1 = tf_matrix(alpha0, a0, d1, q1).subs(DH_Table)
-        self.t1_2 = tf_matrix(alpha1, a1, d2, q2).subs(DH_Table)
-        self.t2_3 = tf_matrix(alpha2, a2, d3, q3).subs(DH_Table)
+        self.t0_1 = tf_matrix(alpha0, a0, d1, self.q1).subs(DH_Table)
+        self.t1_2 = tf_matrix(alpha1, a1, d2, self.q2).subs(DH_Table)
+        self.t2_3 = tf_matrix(alpha2, a2, d3, self.q3).subs(DH_Table)
         t3_4 = tf_matrix(alpha3, a3, d4, q4).subs(DH_Table)
         t4_5 = tf_matrix(alpha4, a4, d5, q5).subs(DH_Table)
         t5_6 = tf_matrix(alpha5, a5, d6, q6).subs(DH_Table)
         t6_ee = tf_matrix(alpha6, a6, d7, q7).subs(DH_Table)
 
-        t0_ee = t0_1 * t1_2 * t2_3 * t3_4 * t4_5 * t5_6 * t6_ee
+        t0_ee = self.t0_1 * self.t1_2 * self.t2_3 * t3_4 * t4_5 * t5_6 * t6_ee
 
         # Extract rotation matrices from the transformation matrices
         r, p, y = symbols('r p y')
@@ -74,7 +74,7 @@ class FK:
         rot_ee = rot_z * rot_y * rot_x
         # Error correction - DH parameters to URDF
         rot_error = rot_z.subs(y, radians(180)) * rot_y.subs(p, radians(-90))
-        self.corrected_ee_rot_matrix = corrected_ee_rot_matrix * rot_error
+        self.corrected_ee_rot_matrix = rot_ee * rot_error
 
 
 # Define Modified DH Transformation matrix
